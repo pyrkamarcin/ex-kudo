@@ -1,0 +1,34 @@
+apiVersion: kudo.dev/v1beta1
+name: "first-operator"
+operatorVersion: "0.1.0"
+appVersion: "1.7.9"
+kubernetesVersion: 1.13.0
+maintainers:
+  - name: Marcin Pyrka
+    email: marcin.pyrka@monotype.pl
+url: https://kudo.dev
+tasks:
+  - name: database
+    kind: Apply
+    spec:
+      resources:
+        - statefulset.yml
+  - name: wordpress
+    kind: Apply
+    spec:
+      resources:
+        - deployment.yml
+        - service.yml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: main
+        strategy: parallel
+        steps:
+          - name: database
+            tasks:
+              - database
+          - name: wordpress
+            tasks:
+              - wordpress
